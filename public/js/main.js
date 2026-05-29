@@ -23,12 +23,14 @@ const musicToggle = document.getElementById('musicToggle');
 const musicPanel = document.getElementById('musicPanel');
 const musicTrackList = document.getElementById('musicTrackList');
 const musicStopBtn = document.getElementById('musicStopBtn');
+const musicPlayPrompt = document.getElementById('musicPlayPrompt');
+const musicPlayBtn = document.getElementById('musicPlayBtn');
 
 const BGM_TRACKS = [
-  { id: 'forest', name: '清晨林间', icon: '🌲', src: 'https://cdn.pixabay.com/audio/2022/10/25/audio_85c2d51f8f.mp3' },
-  { id: 'piano', name: '温柔钢琴', icon: '🎹', src: 'https://cdn.pixabay.com/audio/2021/08/04/audio_12b0c7693c.mp3' },
-  { id: 'ocean', name: '海风轻漾', icon: '🌊', src: 'https://cdn.pixabay.com/audio/2022/05/27/audio_1808fbf07a.mp3' },
-  { id: 'night', name: '静夜冥想', icon: '🌙', src: 'https://cdn.pixabay.com/audio/2023/10/11/audio_0ad81c3638.mp3' }
+  { id: 'forest', name: '清晨林间', icon: '🌲', src: '/audio/forest.mp3' },
+  { id: 'piano', name: '温柔钢琴', icon: '🎹', src: '/audio/piano.mp3' },
+  { id: 'ocean', name: '海风轻漾', icon: '🌊', src: '/audio/ocean.mp3' },
+  { id: 'night', name: '静夜冥想', icon: '🌙', src: '/audio/night.mp3' }
 ];
 
 const BGM_STORAGE_KEY = 'shudong_bgm';
@@ -250,10 +252,20 @@ function startPolling() {
 }
 
 function initAudio() {
-  messageSound.src = 'https://cdn.pixabay.com/audio/2022/03/24/audio_3d6a8ac58b.mp3';
+  messageSound.src = '/audio/notify.mp3';
   renderMusicTracks();
   startBgmOnLoad();
-  setupAutoplayFallback();
+
+  bgMusic.addEventListener('error', () => {
+    musicPlaying = false;
+    autoplayBlocked = true;
+    updateMusicUI();
+    showToast('音乐文件加载失败，请将 mp3 放入 public/audio/ 文件夹', true);
+  });
+}
+
+function showMusicPlayPrompt(show) {
+  musicPlayPrompt.classList.toggle('hidden', !show);
 }
 
 function getDefaultTrackId() {
@@ -264,16 +276,6 @@ function getDefaultTrackId() {
 function startBgmOnLoad() {
   const trackId = getDefaultTrackId();
   startMusic(trackId);
-}
-
-function setupAutoplayFallback() {
-  const resumeOnInteraction = () => {
-    if (!musicPlaying && autoplayBlocked) {
-      startMusic(currentTrackId || getDefaultTrackId());
-    }
-  };
-  document.addEventListener('click', resumeOnInteraction, { once: true });
-  document.addEventListener('keydown', resumeOnInteraction, { once: true });
 }
 
 function renderMusicTracks() {
@@ -309,6 +311,7 @@ function updateMusicUI() {
   musicToggle.setAttribute('aria-pressed', String(musicPlaying));
   musicToggle.textContent = musicPlaying ? '🔊 播放中' : '🎵 轻音乐';
   musicStopBtn.classList.toggle('hidden', !musicPlaying);
+  showMusicPlayPrompt(autoplayBlocked && !musicPlaying);
 
   musicTrackList.querySelectorAll('.music-track-btn').forEach((btn) => {
     const isActive = btn.dataset.trackId === currentTrackId && musicPlaying;
@@ -319,7 +322,7 @@ function updateMusicUI() {
 
 function startMusic(trackId) {
   const track = BGM_TRACKS.find((t) => t.id === trackId);
-  if (!track) return;
+  if (!track) return Promise.resolve();
 
   currentTrackId = trackId;
   bgMusic.src = track.src;
@@ -351,8 +354,14 @@ function stopMusic() {
   bgMusic.pause();
   bgMusic.currentTime = 0;
   musicPlaying = false;
-  autoplayBlocked = false;
   updateMusicUI();
+}
+
+function handleMusicPlayClick() {
+  const trackId = currentTrackId || getDefaultTrackId();
+  startMusic(trackId).then(() => {
+    if (musicPlaying) showMusicPlayPrompt(false);
+  });
 }
 
 function toggleMusicPanel() {
@@ -462,6 +471,11 @@ musicToggle.addEventListener('click', (e) => {
 musicStopBtn.addEventListener('click', (e) => {
   e.stopPropagation();
   stopMusic();
+});
+
+musicPlayBtn.addEventListener('click', (e) => {
+  e.stopPropagation();
+  handleMusicPlayClick();
 });
 
 musicTrackList.addEventListener('click', (e) => {

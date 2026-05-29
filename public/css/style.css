@@ -305,6 +305,52 @@ body {
   display: none;
 }
 
+.music-play-prompt {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px;
+  margin: 0 16px 12px;
+  background: linear-gradient(135deg, var(--accent-light) 0%, rgba(255, 253, 249, 0.95) 100%);
+  border: 1px dashed #b8d4c4;
+  border-radius: 12px;
+  animation: fadeIn 0.3s ease;
+}
+
+.music-play-prompt.hidden {
+  display: none;
+}
+
+.prompt-text {
+  font-size: 0.82rem;
+  color: var(--text-soft);
+  line-height: 1.5;
+}
+
+.music-play-btn {
+  flex-shrink: 0;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.2s, transform 0.15s;
+  box-shadow: 0 4px 12px rgba(107, 154, 125, 0.3);
+}
+
+.music-play-btn:hover {
+  background: var(--accent-hover);
+}
+
+.music-play-btn:active {
+  transform: scale(0.97);
+}
+
 .chat-messages {
   flex: 1;
   overflow-y: auto;
@@ -859,6 +905,20 @@ body {
   font-size: 0.82rem;
   line-height: var(--line-height);
   text-shadow: 0 1px 6px rgba(0, 0, 0, 0.2);
+}
+
+.admin-entry-link {
+  display: inline-block;
+  margin-top: 12px;
+  font-size: 0.68rem;
+  color: rgba(255, 255, 255, 0.35);
+  text-decoration: none;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+
+.admin-entry-link:hover {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 @keyframes fadeIn {

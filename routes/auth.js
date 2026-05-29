@@ -5,10 +5,17 @@ const { signToken } = require('../utils/jwt');
 
 const router = express.Router();
 
-const COUNSELOR_INVITE_CODE = process.env.COUNSELOR_INVITE_CODE || 'TREEHOLE2026';
+/** 咨询师邀请码：匹配则 role=counselor，否则 role=user */
+const COUNSELOR_INVITE_CODE = process.env.COUNSELOR_INVITE_CODE || '52510086';
 
-// 咨询师注册（需邀请码）
-router.post('/counselor/register', (req, res) => {
+function resolveRoleFromInviteCode(inviteCode) {
+  if (inviteCode && String(inviteCode).trim() === COUNSELOR_INVITE_CODE) {
+    return User.USER_ROLES.COUNSELOR;
+  }
+  return User.USER_ROLES.USER;
+}
+
+function registerUser(req, res) {
   const { username, password, inviteCode } = req.body;
 
   if (!username || typeof username !== 'string' || !username.trim()) {
@@ -19,24 +26,20 @@ router.post('/counselor/register', (req, res) => {
     return res.status(400).json({ error: '密码至少 6 位' });
   }
 
-  if (!inviteCode || typeof inviteCode !== 'string') {
-    return res.status(400).json({ error: '请填写团队邀请码' });
-  }
-
-  if (inviteCode.trim() !== COUNSELOR_INVITE_CODE) {
-    return res.status(403).json({ error: '邀请码错误，无法注册' });
-  }
+  const role = resolveRoleFromInviteCode(inviteCode);
 
   try {
     const user = User.createUser({
       username,
       passwordHash: hashPassword(password),
-      role: User.USER_ROLES.COUNSELOR
+      role
     });
+
+    const isCounselor = role === User.USER_ROLES.COUNSELOR;
 
     res.status(201).json({
       success: true,
-      message: '咨询师账号注册成功',
+      message: isCounselor ? '咨询师账号注册成功' : '用户注册成功',
       user
     });
   } catch (err) {
@@ -45,7 +48,13 @@ router.post('/counselor/register', (req, res) => {
     }
     res.status(500).json({ error: '注册失败，请稍后再试' });
   }
-});
+}
+
+// 通用用户注册（可选 inviteCode，正确则为咨询师，否则为普通用户）
+router.post('/register', registerUser);
+
+// 兼容旧路径，逻辑与 /register 相同
+router.post('/counselor/register', registerUser);
 
 // 咨询师登录（签发 JWT）
 router.post('/counselor/login', (req, res) => {

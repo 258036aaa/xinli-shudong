@@ -1,11 +1,6 @@
 const TOKEN_KEY = 'shudong_counselor_token';
+const LOGIN_URL = '/admin-login';
 
-const loginScreen = document.getElementById('loginScreen');
-const adminApp = document.getElementById('adminApp');
-const loginForm = document.getElementById('loginForm');
-const loginUsername = document.getElementById('loginUsername');
-const loginPassword = document.getElementById('loginPassword');
-const loginError = document.getElementById('loginError');
 const logoutBtn = document.getElementById('logoutBtn');
 const messageList = document.getElementById('messageList');
 const loading = document.getElementById('loading');
@@ -19,38 +14,21 @@ function getToken() {
   return localStorage.getItem(TOKEN_KEY);
 }
 
-function setToken(token) {
-  localStorage.setItem(TOKEN_KEY, token);
-}
-
 function clearToken() {
   localStorage.removeItem(TOKEN_KEY);
 }
 
 function authHeaders() {
-  const token = getToken();
   return {
     'Content-Type': 'application/json',
-    Authorization: `Bearer ${token}`
+    Authorization: `Bearer ${getToken()}`
   };
 }
 
-function showLogin() {
-  loginScreen.classList.remove('hidden');
-  adminApp.classList.add('hidden');
-  if (pollTimer) clearInterval(pollTimer);
-}
-
-function showAdmin() {
-  loginScreen.classList.add('hidden');
-  adminApp.classList.remove('hidden');
-  loadConversations();
-  startPolling();
-}
-
-function showLoginError(msg) {
-  loginError.textContent = msg;
-  loginError.classList.remove('hidden');
+function redirectToLogin(message) {
+  if (message) sessionStorage.setItem('admin_auth_msg', message);
+  clearToken();
+  window.location.href = LOGIN_URL;
 }
 
 function formatTime(isoString) {
@@ -149,9 +127,7 @@ async function handleReply(e, id) {
     const data = await res.json();
 
     if (res.status === 401 || res.status === 403) {
-      clearToken();
-      showLogin();
-      showLoginError('登录已过期，请重新登录');
+      redirectToLogin('登录已过期，请重新登录');
       return;
     }
 
@@ -186,7 +162,10 @@ function updateStats(conversations) {
 }
 
 async function loadConversations() {
-  if (!getToken()) return;
+  if (!getToken()) {
+    redirectToLogin();
+    return;
+  }
 
   loading.classList.remove('hidden');
   emptyState.classList.add('hidden');
@@ -197,9 +176,7 @@ async function loadConversations() {
     const data = await res.json();
 
     if (res.status === 401 || res.status === 403) {
-      clearToken();
-      showLogin();
-      showLoginError(res.status === 403 ? '无权访问，仅咨询师可登录' : '登录已过期，请重新登录');
+      redirectToLogin(res.status === 403 ? '无权访问，仅咨询师可登录' : '登录已过期，请重新登录');
       return;
     }
 
@@ -226,41 +203,13 @@ function startPolling() {
   pollTimer = setInterval(loadConversations, 5000);
 }
 
-loginForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  loginError.classList.add('hidden');
-
-  const username = loginUsername.value.trim();
-  const password = loginPassword.value;
-
-  try {
-    const res = await fetch('/api/auth/counselor/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, password })
-    });
-    const data = await res.json();
-
-    if (!res.ok) {
-      showLoginError(data.error || data.message || '登录失败');
-      return;
-    }
-
-    setToken(data.token);
-    loginPassword.value = '';
-    showAdmin();
-  } catch {
-    showLoginError('网络错误，请稍后再试');
-  }
-});
-
 logoutBtn.addEventListener('click', () => {
-  clearToken();
-  showLogin();
+  redirectToLogin();
 });
 
-if (getToken()) {
-  showAdmin();
+if (!getToken()) {
+  redirectToLogin();
 } else {
-  showLogin();
+  loadConversations();
+  startPolling();
 }

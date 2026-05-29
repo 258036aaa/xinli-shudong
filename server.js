@@ -11,6 +11,16 @@ const DATA_FILE = path.join(__dirname, 'data', 'messages.json');
 const ALLOWED_EMOTIONS = ['焦虑', '迷茫', '开心', '吐槽'];
 
 app.use(express.json());
+
+// 页面路由（需在 static 之前注册）
+app.get('/admin-login', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin-login.html'));
+});
+
+app.get('/dashboard', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin.html'));
+});
+
 app.use(express.static(path.join(__dirname, 'public')));
 app.use('/api/auth', authRoutes);
 
@@ -238,5 +248,6 @@ app.get('/api/messages', authorizeRole, listAllConversations);
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`心理树洞服务已启动，端口: ${PORT}`);
-  console.log(`咨询师后台: /admin.html`);
+  console.log(`咨询师登录: /admin-login`);
+  console.log(`咨询师后台: /dashboard`);
 });

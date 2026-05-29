@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>咨询师登录 · 心理树洞</title>
+  <link rel="stylesheet" href="/css/admin-login.css">
+</head>
+<body>
+  <div class="auth-page">
+    <div class="auth-card">
+      <header class="auth-header">
+        <div class="auth-logo">◆</div>
+        <h1>心理树洞</h1>
+        <p>咨询师工作台</p>
+      </header>
+
+      <div class="auth-tabs">
+        <button type="button" class="auth-tab active" data-tab="login">登录</button>
+        <button type="button" class="auth-tab" data-tab="register">注册</button>
+      </div>
+
+      <form id="loginForm" class="auth-form">
+        <label>
+          用户名
+          <input id="loginUsername" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          密码
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="auth-submit">登录</button>
+      </form>
+
+      <form id="registerForm" class="auth-form hidden">
+        <label>
+          用户名
+          <input id="registerUsername" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          密码
+          <input id="registerPassword" type="password" autocomplete="new-password" minlength="6" required>
+        </label>
+        <label>
+          准入密钥
+          <input id="accessKey" type="password" autocomplete="off" placeholder="请输入团队准入密钥" required>
+        </label>
+        <button type="submit" class="auth-submit">注册</button>
+      </form>
+
+      <p id="authError" class="auth-error hidden"></p>
+      <p id="authSuccess" class="auth-success hidden"></p>
+
+      <footer class="auth-footer">
+        <a href="/">← 返回用户端</a>
+      </footer>
+    </div>
+  </div>
+
+  <script src="/js/admin-login.js"></script>
+</body>
+</html>
