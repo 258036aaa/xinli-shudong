@@ -7,9 +7,17 @@
     "start": "node server.js",
     "dev": "node server.js"
   },
-  "keywords": ["心理", "树洞", "匿名"],
+  "engines": {
+    "node": ">=18"
+  },
+  "keywords": [
+    "心理",
+    "树洞",
+    "匿名"
+  ],
   "license": "MIT",
   "dependencies": {
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.3"
   }
 }

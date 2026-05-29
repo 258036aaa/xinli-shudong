@@ -7,15 +7,38 @@
   <link rel="stylesheet" href="/css/admin.css">
 </head>
 <body>
-  <div class="admin-page">
+  <div id="loginScreen" class="login-screen">
+    <div class="login-card">
+      <h1>咨询师登录</h1>
+      <p class="login-hint">请使用咨询师账号登录后台</p>
+      <form id="loginForm" class="login-form">
+        <label>
+          用户名
+          <input id="loginUsername" type="text" autocomplete="username" required>
+        </label>
+        <label>
+          密码
+          <input id="loginPassword" type="password" autocomplete="current-password" required>
+        </label>
+        <button type="submit" class="login-btn">登录</button>
+      </form>
+      <p id="loginError" class="login-error hidden"></p>
+      <p class="login-footer">还没有账号？请联系管理员获取邀请码注册</p>
+    </div>
+  </div>
+
+  <div id="adminApp" class="admin-page hidden">
     <header class="admin-header">
       <div>
         <h1>心理树洞 · 咨询师后台</h1>
-        <p>查看匿名心事，给予温暖的文字回复</p>
+        <p>查看匿名对话，给予温暖的文字回复</p>
       </div>
-      <div class="stats">
-        <span id="totalCount">共 0 条</span>
-        <span id="pendingCount">待回复 0 条</span>
+      <div class="header-actions">
+        <div class="stats">
+          <span id="totalCount">共 0 个会话</span>
+          <span id="pendingCount">待回复 0 个</span>
+        </div>
+        <button id="logoutBtn" class="logout-btn" type="button">退出登录</button>
       </div>
     </header>
 

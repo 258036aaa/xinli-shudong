@@ -1,0 +1,10 @@
+[
+  {
+    "id": "f23f3d12-b496-4ca8-bdc4-dcfb4bd5fad4",
+    "username": "testcounselor",
+    "passwordHash": "797f89851fd6e4ef85ac1c52e7481c6c:68e0aca06710082a8f886770463b46d47f5df4092daaa1d5f889eaa96b701e8089cfeabdeaff2bff1f6912247759d446d99c92fbf312f0bd4aec06a08f4a4c10",
+    "role": "counselor",
+    "createdAt": "2026-05-29T15:30:48.279Z",
+    "updatedAt": "2026-05-29T15:30:48.279Z"
+  }
+]

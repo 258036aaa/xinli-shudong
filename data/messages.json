@@ -2,16 +2,43 @@
   {
     "id": "cbea2bd8-2746-4667-84d6-f09e04df8054",
     "queryCode": "P3Z2N9",
-    "content": "今天心情不好",
     "createdAt": "2026-05-29T11:01:40.029Z",
-    "reply": "没事的，放轻松",
-    "repliedAt": "2026-05-29T11:02:11.687Z"
+    "updatedAt": "2026-05-29T11:02:11.687Z",
+    "messages": [
+      {
+        "id": "7c5bd24c-151a-4ff7-a484-147f6ffcb996",
+        "role": "user",
+        "content": "今天心情不好",
+        "emotionTag": null,
+        "createdAt": "2026-05-29T11:01:40.029Z"
+      },
+      {
+        "id": "95143e3b-b3dc-4483-abff-8a9193c16f71",
+        "role": "counselor",
+        "content": "没事的，放轻松",
+        "createdAt": "2026-05-29T11:02:11.687Z"
+      }
+    ]
   },
   {
     "id": "88a430e5-4b73-4627-bc95-91203f3c674c",
-    "content": "今天和家里人吵架了，心情不好",
+    "queryCode": "J6A5H2",
     "createdAt": "2026-05-29T10:53:55.042Z",
-    "reply": "没事的，放轻松",
-    "repliedAt": "2026-05-29T10:56:01.343Z"
+    "updatedAt": "2026-05-29T10:56:01.343Z",
+    "messages": [
+      {
+        "id": "ca4e3991-0344-4c9e-95fc-701c4143ec7b",
+        "role": "user",
+        "content": "今天和家里人吵架了，心情不好",
+        "emotionTag": null,
+        "createdAt": "2026-05-29T10:53:55.042Z"
+      },
+      {
+        "id": "c1c6b0aa-3bc8-4997-8526-d5637a7cd446",
+        "role": "counselor",
+        "content": "没事的，放轻松",
+        "createdAt": "2026-05-29T10:56:01.343Z"
+      }
+    ]
   }
 ]
