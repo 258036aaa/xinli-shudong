@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心理树洞 · 咨询师后台</title>
+  <link rel="stylesheet" href="/css/admin.css">
+</head>
+<body>
+  <div class="admin-page">
+    <header class="admin-header">
+      <div>
+        <h1>心理树洞 · 咨询师后台</h1>
+        <p>查看匿名心事，给予温暖的文字回复</p>
+      </div>
+      <div class="stats">
+        <span id="totalCount">共 0 条</span>
+        <span id="pendingCount">待回复 0 条</span>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <div id="loading" class="loading">加载中...</div>
+      <div id="emptyState" class="empty-state hidden">
+        <p>🍃 树洞里还没有心事</p>
+        <p class="empty-hint">用户提交后会显示在这里</p>
+      </div>
+      <div id="messageList" class="message-list"></div>
+    </main>
+  </div>
+
+  <script src="/js/admin.js"></script>
+</body>
+</html>

@@ -1,0 +1,15 @@
+{
+  "name": "xinli-shudong",
+  "version": "1.0.0",
+  "description": "心理树洞 - 匿名心事分享应用",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["心理", "树洞", "匿名"],
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.21.2"
+  }
+}

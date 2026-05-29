@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>心理树洞</title>
+  <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+  <div class="bg-layer" aria-hidden="true"></div>
+  <div class="page">
+    <header class="header">
+      <div class="logo">🌳</div>
+      <h1>心理树洞</h1>
+      <p class="subtitle">在这里，你可以安心地说出心里话</p>
+    </header>
+
+    <section class="daily-quote" aria-label="每日暖心签">
+      <p class="daily-quote-label">每日暖心签</p>
+      <p id="dailyQuoteText" class="daily-quote-text"></p>
+    </section>
+
+    <main class="main">
+      <section class="card">
+        <p class="hint">写下你的心事，无需署名，没有人会知道是你。</p>
+        <textarea
+          id="messageInput"
+          class="message-input"
+          placeholder="今天发生了什么？有什么想倾诉的？"
+          rows="8"
+          maxlength="2000"
+        ></textarea>
+
+        <div class="emotion-section">
+          <p class="emotion-label">此刻的心情（可选）</p>
+          <div class="emotion-tags" id="emotionTags">
+            <button type="button" class="emotion-tag" data-emotion="焦虑">焦虑</button>
+            <button type="button" class="emotion-tag" data-emotion="迷茫">迷茫</button>
+            <button type="button" class="emotion-tag" data-emotion="开心">开心</button>
+            <button type="button" class="emotion-tag" data-emotion="吐槽">吐槽</button>
+          </div>
+        </div>
+
+        <div class="footer-row">
+          <span id="charCount" class="char-count">0 / 2000</span>
+          <button id="submitBtn" class="submit-btn" type="button">扔进树洞</button>
+        </div>
+      </section>
+
+      <section class="card lookup-card">
+        <h2 class="lookup-title">查看我的回复</h2>
+        <p class="hint">输入提交心事时获得的 6 位查询码</p>
+        <div class="lookup-row">
+          <input
+            id="lookupInput"
+            class="lookup-input"
+            type="text"
+            placeholder="例如：A1B2C3"
+            maxlength="6"
+            autocomplete="off"
+            spellcheck="false"
+          >
+          <button id="lookupBtn" class="submit-btn" type="button">查询</button>
+        </div>
+        <div id="lookupResult" class="lookup-result hidden"></div>
+      </section>
+
+      <div id="toast" class="toast hidden" role="status" aria-live="polite"></div>
+    </main>
+
+    <footer class="page-footer">
+      <p>你的心声会被温柔倾听 · 完全匿名 · 安全保密</p>
+    </footer>
+  </div>
+
+  <div id="successModal" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+    <div class="modal-backdrop" id="modalBackdrop"></div>
+    <div class="modal-content">
+      <div class="modal-icon">🌿</div>
+      <h2 id="modalTitle" class="modal-title">已放进树洞</h2>
+      <p class="modal-subtitle">你的心事已安全送达，请记住您的专属号码</p>
+      <div class="modal-code-box">
+        <span id="modalQueryCode" class="modal-query-code"></span>
+      </div>
+      <p class="modal-hint">凭此号码可查看咨询师的回复，请妥善保存</p>
+      <div class="modal-actions">
+        <button id="modalCopyBtn" class="modal-btn primary" type="button">复制号码</button>
+        <button id="modalCloseBtn" class="modal-btn secondary" type="button">我知道了</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="/js/main.js"></script>
+</body>
+</html>

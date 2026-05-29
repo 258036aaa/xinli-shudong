@@ -1,0 +1,242 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+:root {
+  --bg: #f4f6f5;
+  --card: #ffffff;
+  --text: #2d3436;
+  --text-soft: #6b7280;
+  --accent: #5b8a72;
+  --accent-light: #e8f2ec;
+  --border: #e2e8e4;
+  --pending: #d97706;
+  --replied: #5b8a72;
+  --shadow: 0 2px 12px rgba(0, 0, 0, 0.06);
+}
+
+body {
+  font-family: "PingFang SC", "Microsoft YaHei", "Helvetica Neue", sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+.admin-page {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.admin-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 28px;
+  flex-wrap: wrap;
+}
+
+.admin-header h1 {
+  font-size: 1.5rem;
+  font-weight: 600;
+}
+
+.admin-header p {
+  color: var(--text-soft);
+  font-size: 0.9rem;
+  margin-top: 4px;
+}
+
+.stats {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.stats span {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  color: var(--text-soft);
+}
+
+.loading,
+.empty-state {
+  text-align: center;
+  padding: 60px 20px;
+  color: var(--text-soft);
+}
+
+.empty-hint {
+  font-size: 0.85rem;
+  margin-top: 8px;
+}
+
+.hidden {
+  display: none !important;
+}
+
+.message-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.message-card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  box-shadow: var(--shadow);
+}
+
+.message-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12px;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.message-badges {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.emotion-badge {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: #f0f4f2;
+  color: var(--accent);
+  border: 1px solid #d4e4dc;
+  font-weight: 500;
+}
+
+.message-time {
+  font-size: 0.8rem;
+  color: var(--text-soft);
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 3px 10px;
+  border-radius: 999px;
+  font-weight: 500;
+}
+
+.status-badge.pending {
+  background: #fef3c7;
+  color: var(--pending);
+}
+
+.status-badge.replied {
+  background: var(--accent-light);
+  color: var(--replied);
+}
+
+.message-content {
+  background: #f9faf9;
+  border-radius: 8px;
+  padding: 14px 16px;
+  font-size: 0.95rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  border-left: 3px solid var(--accent);
+}
+
+.reply-section {
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 1px dashed var(--border);
+}
+
+.reply-section h3 {
+  font-size: 0.85rem;
+  color: var(--text-soft);
+  font-weight: 500;
+  margin-bottom: 10px;
+}
+
+.existing-reply {
+  background: var(--accent-light);
+  border-radius: 8px;
+  padding: 12px 14px;
+  font-size: 0.9rem;
+  white-space: pre-wrap;
+  word-break: break-word;
+  margin-bottom: 12px;
+}
+
+.reply-time {
+  font-size: 0.75rem;
+  color: var(--text-soft);
+  margin-top: 6px;
+}
+
+.reply-form textarea {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 10px 12px;
+  font-size: 0.9rem;
+  font-family: inherit;
+  resize: vertical;
+  min-height: 80px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.reply-form textarea:focus {
+  border-color: var(--accent);
+}
+
+.reply-actions {
+  margin-top: 10px;
+  display: flex;
+  justify-content: flex-end;
+}
+
+.reply-btn {
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 8px 18px;
+  font-size: 0.85rem;
+  font-family: inherit;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.reply-btn:hover {
+  opacity: 0.9;
+}
+
+.reply-btn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.reply-success {
+  font-size: 0.8rem;
+  color: var(--replied);
+  margin-top: 8px;
+}
+
+@media (max-width: 600px) {
+  .admin-header {
+    flex-direction: column;
+  }
+}
