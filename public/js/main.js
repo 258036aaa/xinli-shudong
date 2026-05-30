@@ -17,23 +17,6 @@ const welcomeBackdrop = document.getElementById('welcomeBackdrop');
 const welcomeCode = document.getElementById('welcomeCode');
 const welcomeCopyBtn = document.getElementById('welcomeCopyBtn');
 const welcomeCloseBtn = document.getElementById('welcomeCloseBtn');
-const messageSound = document.getElementById('messageSound');
-const bgMusic = document.getElementById('bgMusic');
-const musicToggle = document.getElementById('musicToggle');
-const musicPanel = document.getElementById('musicPanel');
-const musicTrackList = document.getElementById('musicTrackList');
-const musicStopBtn = document.getElementById('musicStopBtn');
-const musicPlayPrompt = document.getElementById('musicPlayPrompt');
-const musicPlayBtn = document.getElementById('musicPlayBtn');
-
-const BGM_TRACKS = [
-  { id: 'forest', name: '清晨林间', icon: '🌲', src: '/audio/forest.mp3' },
-  { id: 'piano', name: '温柔钢琴', icon: '🎹', src: '/audio/piano.mp3' },
-  { id: 'ocean', name: '海风轻漾', icon: '🌊', src: '/audio/ocean.mp3' },
-  { id: 'night', name: '静夜冥想', icon: '🌙', src: '/audio/night.mp3' }
-];
-
-const BGM_STORAGE_KEY = 'shudong_bgm';
 
 const WARM_QUOTES = [
   '你不必时刻保持坚强，偶尔脆弱，也是对自己温柔的允许。',
@@ -63,9 +46,6 @@ let selectedEmotion = null;
 let queryCode = null;
 let knownMessageIds = new Set();
 let pollTimer = null;
-let currentTrackId = null;
-let musicPlaying = false;
-let autoplayBlocked = false;
 
 function getIdentity() {
   try {
@@ -150,10 +130,7 @@ function renderChatBubble(msg) {
   `;
 }
 
-function renderConversation(conversation, playSound = false) {
-  const prevCount = knownMessageIds.size;
-  let newCounselorMsg = false;
-
+function renderConversation(conversation) {
   chatMessages.innerHTML = '';
   if (!conversation.messages.length) {
     chatMessages.innerHTML = `
@@ -166,30 +143,21 @@ function renderConversation(conversation, playSound = false) {
   }
 
   conversation.messages.forEach((msg) => {
-    if (!knownMessageIds.has(msg.id)) {
-      if (msg.role === 'counselor' && knownMessageIds.size > 0) {
-        newCounselorMsg = true;
-      }
-      knownMessageIds.add(msg.id);
-    }
+    knownMessageIds.add(msg.id);
     chatMessages.insertAdjacentHTML('beforeend', renderChatBubble(msg));
   });
 
   chatMessages.scrollTop = chatMessages.scrollHeight;
-
-  if (playSound && newCounselorMsg && prevCount > 0) {
-    playMessageSound();
-  }
 }
 
-async function loadConversation(code, playSound = false) {
+async function loadConversation(code) {
   const res = await fetch(`/api/chat/${code}`);
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || '加载失败');
   queryCode = code;
   saveIdentity(code);
   updateSessionBadge(code);
-  renderConversation(data, playSound);
+  renderConversation(data);
   return data;
 }
 
@@ -246,138 +214,13 @@ function startPolling() {
   pollTimer = setInterval(async () => {
     if (!queryCode) return;
     try {
-      await loadConversation(queryCode, true);
+      await loadConversation(queryCode);
     } catch { /* 静默失败 */ }
   }, POLL_INTERVAL);
 }
 
-function initAudio() {
-  messageSound.src = '/audio/notify.mp3';
-  renderMusicTracks();
-  startBgmOnLoad();
-
-  bgMusic.addEventListener('error', () => {
-    musicPlaying = false;
-    autoplayBlocked = true;
-    updateMusicUI();
-    showToast('音乐文件加载失败，请将 mp3 放入 public/audio/ 文件夹', true);
-  });
-}
-
-function showMusicPlayPrompt(show) {
-  musicPlayPrompt.classList.toggle('hidden', !show);
-}
-
-function getDefaultTrackId() {
-  const { trackId } = getBgmState();
-  return trackId && BGM_TRACKS.some((t) => t.id === trackId) ? trackId : BGM_TRACKS[0].id;
-}
-
-function startBgmOnLoad() {
-  const trackId = getDefaultTrackId();
-  startMusic(trackId);
-}
-
-function renderMusicTracks() {
-  musicTrackList.innerHTML = BGM_TRACKS.map((track) => `
-    <button
-      type="button"
-      class="music-track-btn"
-      data-track-id="${track.id}"
-      aria-pressed="false"
-    >
-      <span class="track-icon">${track.icon}</span>
-      <span class="track-name">${track.name}</span>
-    </button>
-  `).join('');
-}
-
-function getBgmState() {
-  try {
-    return JSON.parse(localStorage.getItem(BGM_STORAGE_KEY)) || {};
-  } catch {
-    return {};
-  }
-}
-
-function saveBgmState() {
-  if (currentTrackId) {
-    localStorage.setItem(BGM_STORAGE_KEY, JSON.stringify({ trackId: currentTrackId }));
-  }
-}
-
-function updateMusicUI() {
-  musicToggle.classList.toggle('active', musicPlaying);
-  musicToggle.setAttribute('aria-pressed', String(musicPlaying));
-  musicToggle.textContent = musicPlaying ? '🔊 播放中' : '🎵 轻音乐';
-  musicStopBtn.classList.toggle('hidden', !musicPlaying);
-  showMusicPlayPrompt(autoplayBlocked && !musicPlaying);
-
-  musicTrackList.querySelectorAll('.music-track-btn').forEach((btn) => {
-    const isActive = btn.dataset.trackId === currentTrackId && musicPlaying;
-    btn.classList.toggle('active', isActive);
-    btn.setAttribute('aria-pressed', String(isActive));
-  });
-}
-
-function startMusic(trackId) {
-  const track = BGM_TRACKS.find((t) => t.id === trackId);
-  if (!track) return Promise.resolve();
-
-  currentTrackId = trackId;
-  bgMusic.src = track.src;
-  bgMusic.volume = 0.35;
-
-  return bgMusic.play()
-    .then(() => {
-      musicPlaying = true;
-      autoplayBlocked = false;
-      updateMusicUI();
-      saveBgmState();
-    })
-    .catch(() => {
-      musicPlaying = false;
-      autoplayBlocked = true;
-      updateMusicUI();
-    });
-}
-
-function playTrack(trackId) {
-  if (currentTrackId === trackId && musicPlaying) {
-    stopMusic();
-    return;
-  }
-  startMusic(trackId);
-}
-
-function stopMusic() {
-  bgMusic.pause();
-  bgMusic.currentTime = 0;
-  musicPlaying = false;
-  updateMusicUI();
-}
-
-function handleMusicPlayClick() {
-  const trackId = currentTrackId || getDefaultTrackId();
-  startMusic(trackId).then(() => {
-    if (musicPlaying) showMusicPlayPrompt(false);
-  });
-}
-
-function toggleMusicPanel() {
-  const isOpen = !musicPanel.classList.contains('hidden');
-  musicPanel.classList.toggle('hidden', isOpen);
-  musicToggle.setAttribute('aria-expanded', String(!isOpen));
-}
-
-function playMessageSound() {
-  messageSound.currentTime = 0;
-  messageSound.play().catch(() => {});
-}
-
 async function init() {
   showDailyQuote();
-  initAudio();
 
   const savedCode = getIdentity();
   if (savedCode) {
@@ -459,45 +302,9 @@ welcomeCopyBtn.addEventListener('click', async () => {
 welcomeCloseBtn.addEventListener('click', hideWelcomeModal);
 welcomeBackdrop.addEventListener('click', hideWelcomeModal);
 
-musicToggle.addEventListener('click', (e) => {
-  e.stopPropagation();
-  if (musicPlaying && musicPanel.classList.contains('hidden')) {
-    stopMusic();
-    return;
-  }
-  toggleMusicPanel();
-});
-
-musicStopBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  stopMusic();
-});
-
-musicPlayBtn.addEventListener('click', (e) => {
-  e.stopPropagation();
-  handleMusicPlayClick();
-});
-
-musicTrackList.addEventListener('click', (e) => {
-  const btn = e.target.closest('.music-track-btn');
-  if (!btn) return;
-  playTrack(btn.dataset.trackId);
-});
-
-document.addEventListener('click', (e) => {
-  if (!e.target.closest('.music-control')) {
-    musicPanel.classList.add('hidden');
-    musicToggle.setAttribute('aria-expanded', 'false');
-  }
-});
-
 document.addEventListener('keydown', (e) => {
-  if (e.key === 'Escape') {
-    if (!welcomeModal.classList.contains('hidden')) {
-      hideWelcomeModal();
-    }
-    musicPanel.classList.add('hidden');
-    musicToggle.setAttribute('aria-expanded', 'false');
+  if (e.key === 'Escape' && !welcomeModal.classList.contains('hidden')) {
+    hideWelcomeModal();
   }
 });
 
