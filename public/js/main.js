@@ -171,6 +171,10 @@ function renderConversation(conversation, { force = false } = {}) {
 
 async function loadConversation(code) {
   const res = await fetch(`/api/chat/${code}`);
+  const contentType = res.headers.get('content-type') || '';
+  if (!contentType.includes('application/json')) {
+    throw new Error('加载失败');
+  }
   const data = await res.json();
   if (!res.ok) throw new Error(data.error || '加载失败');
   queryCode = code;
@@ -231,7 +235,7 @@ function resetEmotionTags() {
 function startPolling() {
   if (pollTimer) clearInterval(pollTimer);
   pollTimer = setInterval(async () => {
-    if (!queryCode) return;
+    if (!queryCode || document.hidden) return;
     try {
       await loadConversation(queryCode);
     } catch { /* 静默失败 */ }
@@ -248,6 +252,7 @@ async function init() {
       lastConversationFingerprint = '';
       await loadConversation(savedCode);
     } catch {
+      queryCode = null;
       localStorage.removeItem(STORAGE_KEY);
       showToast('本地会话已失效，请重新发送消息', true);
     }
