@@ -235,6 +235,9 @@ body {
 .chat-bubble {
   display: flex;
   max-width: 82%;
+}
+
+.chat-bubble.is-new {
   animation: fadeIn 0.3s ease;
 }
 

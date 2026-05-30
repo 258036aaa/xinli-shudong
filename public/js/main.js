@@ -46,6 +46,12 @@ let selectedEmotion = null;
 let queryCode = null;
 let knownMessageIds = new Set();
 let pollTimer = null;
+let lastConversationFingerprint = '';
+
+function getConversationFingerprint(conversation) {
+  if (!conversation?.messages?.length) return 'empty';
+  return conversation.messages.map((msg) => msg.id).join(',');
+}
 
 function getIdentity() {
   try {
@@ -113,14 +119,15 @@ function hideWelcomeModal() {
   document.body.style.overflow = '';
 }
 
-function renderChatBubble(msg) {
+function renderChatBubble(msg, isNew = false) {
   const isUser = msg.role === 'user';
   const emotionHtml = msg.emotionTag
     ? `<span class="bubble-emotion">${escapeHtml(msg.emotionTag)}</span>`
     : '';
+  const newClass = isNew ? ' is-new' : '';
 
   return `
-    <div class="chat-bubble ${isUser ? 'user' : 'counselor'}" data-id="${msg.id}">
+    <div class="chat-bubble ${isUser ? 'user' : 'counselor'}${newClass}" data-id="${msg.id}">
       <div class="bubble-inner">
         ${emotionHtml}
         <p class="bubble-text">${escapeHtml(msg.content)}</p>
@@ -130,7 +137,16 @@ function renderChatBubble(msg) {
   `;
 }
 
-function renderConversation(conversation) {
+function renderConversation(conversation, { force = false } = {}) {
+  const fingerprint = getConversationFingerprint(conversation);
+  if (!force && fingerprint === lastConversationFingerprint) {
+    return;
+  }
+  lastConversationFingerprint = fingerprint;
+
+  const shouldStickToBottom =
+    chatMessages.scrollHeight - chatMessages.scrollTop - chatMessages.clientHeight < 80;
+
   chatMessages.innerHTML = '';
   if (!conversation.messages.length) {
     chatMessages.innerHTML = `
@@ -143,11 +159,14 @@ function renderConversation(conversation) {
   }
 
   conversation.messages.forEach((msg) => {
+    const isNew = !knownMessageIds.has(msg.id);
     knownMessageIds.add(msg.id);
-    chatMessages.insertAdjacentHTML('beforeend', renderChatBubble(msg));
+    chatMessages.insertAdjacentHTML('beforeend', renderChatBubble(msg, isNew));
   });
 
-  chatMessages.scrollTop = chatMessages.scrollHeight;
+  if (shouldStickToBottom) {
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+  }
 }
 
 async function loadConversation(code) {
@@ -195,7 +214,7 @@ async function sendMessage() {
     messageInput.value = '';
     charCount.textContent = `0 / ${MAX_LENGTH}`;
     resetEmotionTags();
-    renderConversation(data.conversation);
+    renderConversation(data.conversation, { force: true });
   } catch (err) {
     showToast(err.message, true);
   } finally {
@@ -226,6 +245,7 @@ async function init() {
   if (savedCode) {
     try {
       knownMessageIds.clear();
+      lastConversationFingerprint = '';
       await loadConversation(savedCode);
     } catch {
       localStorage.removeItem(STORAGE_KEY);
@@ -270,6 +290,7 @@ restoreBtn.addEventListener('click', async () => {
   restoreBtn.disabled = true;
   try {
     knownMessageIds.clear();
+    lastConversationFingerprint = '';
     await loadConversation(code);
     showToast('对话已恢复');
     restoreInput.value = '';
